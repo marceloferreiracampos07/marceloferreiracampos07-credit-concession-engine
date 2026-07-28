@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+  // output aponta para node_modules/@prisma/client (padrão).
+  // Altere para um caminho relativo se precisar de geração customizada.
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Fundo {
+  id        String   @id @default(uuid())
+  tenantId  String   @unique
+  balance   Int
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+  contratos Contrato[]
+
+  @@map("fundos")
+}
+
+enum ContractStatus {
+  APPROVED
+  REJECTED
+}
+
+model Contrato {
+  id         String   @id @default(uuid())
+  tenantId   String
+  proposalId String   @unique
+  amount     Int
+  status     ContractStatus
+  createdAt  DateTime @default(now())
+  fundo      Fundo    @relation(fields: [tenantId], references: [tenantId], onDelete: Restrict)
+  outboxEvents OutboxEvent[]
+
+  @@map("contratos")
+}
+
+model Tenant {
+  id            String   @id @default(uuid())
+  name          String
+  webhookUrl    String
+  webhookFormat String   @default("JSON")
+  webhookSecret String
+  createdAt     DateTime @default(now())
+  fundos        Fundo[]
+  outboxEvents  OutboxEvent[]
+
+  @@map("tenants")
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  PROCESSED
+  FAILED
+}
+
+model OutboxEvent {
+  id             String       @id @default(uuid())
+  tenantId       String
+  contractId     String
+  aggregateType  String       @default("CONTRACT")
+  eventType      String
+  payload        Json
+  idempotencyKey String
+  tenantUrl      String
+  tenantFormat   String       @default("JSON")
+  status         OutboxStatus @default(PENDING)
+  attempts       Int          @default(0)
+  nextAttemptAt  DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  contrato       Contrato     @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  tenant         Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict)
+
+  @@index([status, nextAttemptAt])
+  @@map("outbox_events")
+}

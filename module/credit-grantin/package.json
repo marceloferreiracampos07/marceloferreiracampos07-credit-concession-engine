@@ -1,0 +1,32 @@
+{
+  "name": "credit-grantin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "prisma generate",
+    "check": "tsc --noEmit",
+    "test": "vitest run --config test/vitest.config.ts",
+    "test:unit": "vitest run test/unit --config test/vitest.config.ts",
+    "test:integration": "vitest run test/integration --config test/vitest.config.ts",
+    "db:seed": "prisma db seed"
+  },
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^6.19.0",
+    "@prisma/client": "^6.19.0",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "pg": "^8.16.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.18.0",
+    "prisma": "^6.19.0",
+    "testcontainers": "^10.28.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

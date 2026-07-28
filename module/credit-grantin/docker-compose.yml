@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: pcp-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-pcp_db}
+    ports:
+      - '${DB_PORT:-5433}:5432'
+    volumes:
+      - ./data:/var/lib/postgresql/data

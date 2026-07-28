@@ -1,0 +1,14 @@
+export const HTTP_STATUS = {
+    OK: 200,
+    BAD_REQUEST: 400,
+    NOT_FOUND: 404,
+    UNPROCESSABLE_ENTITY: 422,
+    INTERNAL_SERVER_ERROR: 500,
+} as const;
+
+export const DOMAIN_ERROR_HTTP_MAP: Record<string, number> = {
+    FUND_NOT_FOUND: 404,
+    TENANT_NOT_FOUND: 404,
+    INSUFFICIENT_FUNDS: 422,
+    VALOR_INVALIDO: 422,
+};
