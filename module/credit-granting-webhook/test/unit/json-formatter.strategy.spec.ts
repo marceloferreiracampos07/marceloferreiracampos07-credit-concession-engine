@@ -1,11 +1,11 @@
-// Supondo que estamos usando Jest ou Vitest
-import { JsonFormatterStrategy } from '../../Strategy/json-formatter.strategy.js';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { JsonWebhookFormatter } from '../../Strategy/json-formatter.strategy.js';
 
-describe('JsonFormatterStrategy', () => {
-  let strategy: JsonFormatterStrategy;
+describe('JsonWebhookFormatter', () => {
+  let strategy: JsonWebhookFormatter;
 
   beforeEach(() => {
-    strategy = new JsonFormatterStrategy();
+    strategy = new JsonWebhookFormatter();
   });
 
   it('deve retornar application/json como contentType', () => {

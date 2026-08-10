@@ -30,13 +30,8 @@ export class OutboxRelayWorker {
 
   private async processarEvento(evento: OutboxEventEntity): Promise<void> {
     try {
-      // 1. Joga o evento inteiro na fila do BullMQ
       await webhookQueue.add('enviar-webhook', evento);
-      
-      // 2. Avisa a entidade que o evento já foi despachado para a fila
       evento.markAsProcessed();
-      
-      // 3. Atualiza o status no banco de dados para não ser lido novamente
       await this.outboxRepo.update(evento);
       
       this.logger.info(`Evento [${evento.id}] despachado para a fila do Redis com sucesso.`);
@@ -44,4 +39,4 @@ export class OutboxRelayWorker {
       this.logger.error(`Erro crítico ao tentar colocar evento [${evento.id}] na fila`, error);
     }
   }
-}
+}

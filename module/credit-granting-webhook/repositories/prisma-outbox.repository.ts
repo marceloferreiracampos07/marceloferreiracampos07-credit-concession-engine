@@ -12,9 +12,10 @@ export class PrismaOutboxRepository implements IOutboxRepository {
     });
   }
 
+  /**
+   * @note This query syntax assumes PostgreSQL.
+   */
   async findPending(limit: number): Promise<OutboxEventEntity[]> {
-    // Atenção: A sintaxe exata pode mudar levemente dependendo se você usa PostgreSQL ou MySQL.
-    // Esta query assume PostgreSQL.
     const rawEvents = await this.prisma.$queryRaw<any[]>`
       SELECT * FROM "outbox_events"
       WHERE "status" = 'PENDING'
@@ -41,7 +42,7 @@ export class PrismaOutboxRepository implements IOutboxRepository {
       eventType: event.eventType,
       tenantUrl: event.tenantUrl,
       tenantFormat: event.tenantFormat,
-      payload: event.payload, // O Prisma lida nativamente se a coluna for JSON
+      payload: event.payload,
       status: event.status,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
@@ -55,7 +56,7 @@ export class PrismaOutboxRepository implements IOutboxRepository {
       raw.eventType,
       raw.tenantUrl,
       raw.tenantFormat as TenantFormat,
-      raw.payload, // Pode precisar de typeof raw.payload === 'string' ? JSON.parse(raw.payload) : raw.payload dependendo do driver
+      raw.payload,
       raw.status as OutboxStatus,
       raw.createdAt,
       raw.updatedAt,

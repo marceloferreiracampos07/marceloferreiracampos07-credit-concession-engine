@@ -17,20 +17,17 @@ export class WebhookConsumer {
     private readonly formatterMap: Map<string, IWebhookFormatterStrategy>,
     private readonly logger: ILogger,
   ) {
-    // Inicia o consumidor ouvindo a 'webhook-queue' usando a conexão compartilhada
     this.worker = new Worker('webhook-queue', async (job: Job) => {
       const eventoRaw = job.data as RawOutboxEvent;
       await this.enviarWebhook(eventoRaw);
     }, { connection: redisConnection });
 
-    // Escuta eventos nativos de falha do BullMQ
     this.worker.on('failed', (job: Job | undefined, err: Error) => {
       if (job) {
          this.logger.error(`Tentativa falha ao processar evento [${job.data.id}]. Erro: ${err.message}`);
       }
     });
 
-    // Escuta evento de sucesso
     this.worker.on('completed', (job: Job) => {
       this.logger.info(`Evento [${job.data.id}] processado com SUCESSO e finalizado no BullMQ.`);
     });
@@ -50,8 +47,6 @@ export class WebhookConsumer {
     });
 
     if (!response.ok) {
-      // Quando damos throw aqui, o BullMQ automaticamente captura, loga a falha,
-      // e reagenda de acordo com o backoff configurado (1 min, 2 min, etc)
       throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
     }
   }

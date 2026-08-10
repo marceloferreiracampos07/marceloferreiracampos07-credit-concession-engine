@@ -1,12 +1,9 @@
-// Este é um rascunho do Prisma Schema para a tabela de Outbox.
-// Ele deve ficar na pasta prisma/ para que possamos rodar os testes de integração com banco real.
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql" // Supondo postgresql
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -17,9 +14,10 @@ model OutboxEvent {
   tenantUrl     String
   tenantFormat  String
   payload       Json
-  status        String   @default("PENDING") // PENDING, PROCESSED, FAILED
+  status        String   @default("PENDING")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@map("outbox_events")
 }
+
